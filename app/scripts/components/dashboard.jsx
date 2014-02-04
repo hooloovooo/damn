@@ -22,7 +22,6 @@
 
     var Project = React.createClass({
         render: function() {
-            console.log(this.props.data);
             return (
                 <li key={this.props.data.id} data-url={this.props.data.url}>
                     <h3>{this.props.data.name}</h3>
