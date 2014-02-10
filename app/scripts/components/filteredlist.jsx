@@ -37,8 +37,8 @@
         render: function() {
             return (
                 <ul onClick={this.handleClick}>
-                       {this.props.order.fields.map(function(item)  {
-                            return <li value={item[0]}>{item[1]}</li>
+                       {this.props.order.choices.map(function(item)  {
+                            return <li key={item[0]} value={item[0]}>{item[1]}</li>
                         })}
                 </ul>
             );
@@ -65,46 +65,46 @@
         }
     });
 
-    /*Define react modules of the module*/
+
     var FilteredList = React.createClass({
+        mixins: [SelectableListMixin, AsyncListMixin],
+        propTypes: jQuery.extend({
+            type: React.PropTypes.func.isRequired
+        }, AsyncListMixin.propTypes, SelectableListMixin.propTypes),
         getInitialState: function() {
-            return {data: {results: []}, ordering: {fields:[]}, search: {}};
+            return {ordering: {choices:[]}, search: {}};
+        },
+        processURL: function (url) {
+            console.log('FilteredList::processURL '+this.state.searching);
+            console.log('FilteredList::processURL '+this.state.order_field);
+            var args = '';
+            if (this.state.search.search_by_field && this.state.searching) {
+                args += '&'+this.state.search.search_by_field +'='+ this.state.searching;
+            }
+            if (this.state.ordering.order_by_field && this.state.order_field) {
+                args += '&'+this.state.ordering.order_by_field +'='+ this.state.order_field;
+            }
+            if (this.state.navigate) {
+                return this.state.navigating+'?'+args;
+            }
+            return url+'?'+args;        
         },
         handleonSearch: function(data) {
-            var component = this;
-            var url = component.props.url+component.state.search.url + data.text;
-            console.log("handleonSearch "+url);
-            var data_xhr = Request(url);
-              data_xhr.done(function( data ) {
-                  component.state.data = data;
-                  component.setState(component.state);
-              });
+            this.state.searching = data.text
+            this.loadData(this.props.url);
         },
         handleonOrder: function(data) {
-            var component = this;
-            var url = component.props.url+component.state.ordering.url + data.field;
-            console.log("handleonOrder "+url);
-            var data_xhr = Request(url);
-              data_xhr.done(function( data ) {
-                  component.state.data = data;
-                  component.setState(component.state);
-              });
+            this.state.order_field = data.field
+            this.loadData(this.props.url);
         },
         handleonNavigate: function(data) {
-            console.log('handleonNavigate'+data.url)
-            var component = this;
-            var data_xhr = Request(data.url);
-              data_xhr.done(function( data ) {
-                  component.state.data = data;
-                  component.setState(component.state);
-              });
+            this.state.navigate = data.url;
+            this.loadData(this.props.url);
         },
-        componentWillMount: function() {
+        loadOptions: function (url) {
             var component = this;
-            
-            console.log('componentWillMount');
-            var filters = RequestOPTIONS(this.props.url);
-            
+
+            var filters = RequestOPTIONS(url);
             
             filters.done(function( xhr_data ) {
               console.log(xhr_data);
@@ -112,32 +112,36 @@
               component.state.search = xhr_data.search;
               component.state.name = xhr_data.name;
               component.setState(component.state);
-              var data_xhr = Request(component.props.url);
-              data_xhr.done(function( data ) {
-                  component.state.data = data;
-                  component.setState(component.state);
-              });
             });
         },
-        handleClick: function(event) {
-            var element = $(event.target).parent('li');
-            console.log(element);
-            var url = element.attr('data-url');
-            console.log('handleClick '+ url); //Todo: Update detail view here.
-            return false;
-          },
+        componentWillMount: function() {
+            var component = this;
+            this.props.url.done(function (url) {
+                component.loadOptions(url);
+            });
+        },
+        componentWillReceiveProps: function(nextProps) {
+          console.log('FilteredList::componentWillReceiveProps');
+          this.loadData(nextProps.url);
+        },
         render: function() {
             return (
-                <div className="workspace-list active">
-                    <h3>{this.state.name}</h3>
-                    {this.state.search?<FilteredListSearch search={this.state.search} onSearch={this.handleonSearch}></FilteredListSearch>:''}
-                    {this.state.ordering?<FilteredListOrder order={this.state.ordering} onOrder={this.handleonOrder}></FilteredListOrder>:''}
-                    <FilteredListPaginator data={this.state.data} onNavigate={this.handleonNavigate}></FilteredListPaginator>
-                    <ul onClick={this.handleClick}>
-                       {this.state.data.results.map(function(itm)  {
-                            return this.props.type({data:itm})
-                        }, this)}
-                    </ul>
+                <div className="active">
+                    <div className="workspace-list">
+                        <h3>{this.state.name}</h3>
+                        <FilteredListSearch search={this.state.search} onSearch={this.handleonSearch}></FilteredListSearch>
+                        <FilteredListOrder order={this.state.ordering} onOrder={this.handleonOrder}></FilteredListOrder>
+                        <FilteredListPaginator data={this.state.data} onNavigate={this.handleonNavigate}></FilteredListPaginator>
+                        <ul>
+                           {this.state.data.results.map(function(itm, i)  {
+                                var boundClick = this.handleSelected.bind(this, i);
+                                return this.props.type({key:itm.id, data:itm, onClick:boundClick, selected:(this.state.selected == i)});
+                            }, this)}
+                        </ul>
+                    </div>
+                    <div className="workspace-detail">
+                        {this.state.active?this.props.detailtype({key:this.state.active.id, data:this.state.active, context:this.props.context.slice(1)}):''}
+                    </div>
                 </div>
             );
         }

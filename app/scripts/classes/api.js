@@ -1,6 +1,5 @@
 (function() {
 	"use strict";
-
 	var staticUrl = "http://damn.csproject.org:8080";
 
 	var requestCache = {};
