@@ -2,10 +2,12 @@
 
 (function() {
     "use strict";
+    var damntoken = $.cookie("damntoken");
+    
     
     $.ajaxSetup ({
         cache: false,
-        headers: {'Authorization': 'Token 8d9cbd10fb2d48a62e33377f1749576a6b0f1bfb'}
+        headers: (damntoken?{'Authorization': 'Token '+damntoken}:{})
     });
     
     var USER_NAME;
@@ -51,7 +53,11 @@
             
             login_request.done(function( data ) {
                 console.log(data);
+<<<<<<< HEAD
                 
+=======
+                $.cookie("damntoken", data.token);
+>>>>>>> 8ff9b1b547e685681e195debe75de5e0b87459d7
                 $.ajaxSetup ({
                     headers: {'Authorization': 'Token '+data.token}
                 });
@@ -70,12 +76,12 @@
                             <div className="modal" >
                                 <h1>Login</h1>
                                 <form>
-                                    <div class="field" name="Login">
-                                        <label for="widget" >Login</label>
+                                    <div className="field" name="Login">
+                                        <label>Login</label>
                                         <input ref="login" type="text" value="admin" />
                                     </div>
-                                    <div class="field" name="Login">
-                                        <label for="widget" >Password</label>
+                                    <div className="field" name="Login">
+                                        <label>Password</label>
                                         <input ref="password" type="password" value="admin" />
                                     </div>
                                     <button onClick={this.handleLogin} type="submit">Login</button>
