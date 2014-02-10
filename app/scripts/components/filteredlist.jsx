@@ -20,7 +20,7 @@
             return (
                 <form className="filteredListSearchForm" onSubmit={this.handleSubmit} title={this.state.description}>
                     <input type="text" placeholder="Search..." ref="text"/>
-                    <input type="submit" value="Search" />
+                    <button type="submit">Search</button>
                 </form>
             );
         }
@@ -132,7 +132,7 @@
             return (
                 <div className="active">
                     <div className="workspace-list">
-                        <h3>{this.state.name}</h3>
+                        <h2>{this.state.name}</h2>
                         <FilteredListSearch search={this.state.search} onSearch={this.handleonSearch}></FilteredListSearch>
                         <FilteredListOrder order={this.state.ordering} onOrder={this.handleonOrder}></FilteredListOrder>
                         <FilteredListPaginator data={this.state.data} onNavigate={this.handleonNavigate}></FilteredListPaginator>

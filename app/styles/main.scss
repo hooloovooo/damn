@@ -13,6 +13,11 @@ a {
 	box-sizing: border-box;
 }
 
+h1, h2, h3, h4 {
+    font-family: "Arvo";
+    font-weight: normal;
+}
+
 //#Header space
 #header {
 	background: #222222;
@@ -181,7 +186,25 @@ a {
         height: 100%;
 		width: 40%;
 		margin: 0;
-		padding: 0;
+
+        h2 {
+            margin: 10px 0 10px 30px;
+
+            font-size: 30px;
+            text-transform: uppercase;
+        }
+
+        .filteredListSearchForm {
+            margin: 0 0 0 30px;
+
+            input {
+                border: 2px solid #111111;
+                background: #333333;
+                color: #eeeeee;
+
+                padding: 3px;
+            }
+        }
 
 		li {
             cursor: pointer;

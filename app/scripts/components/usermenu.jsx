@@ -3,12 +3,10 @@
 (function() {
     "use strict";
     
-    /*
     $.ajaxSetup ({
         cache: false,
-        headers: {'Authorization': 'Token e8b384a82666310e71334a4a2078a4ead775e76a'}
+        headers: {'Authorization': 'Token 8d9cbd10fb2d48a62e33377f1749576a6b0f1bfb'}
     });
-    */
     
     var USER_NAME;
     var USER_URL = $.Deferred();
@@ -19,8 +17,9 @@
         },
         loadFromServer: function () {
             var component = this;
-            var data_xhr = Request('/user/');
-            data_xhr.done(function( data ) {
+            var user_request = Request('/user/');
+            
+            user_request.done(function( data ) {
                 USER_NAME = component.state.username = data.username;
                 component.state.loggedin = true;
                 component.state.url = data.url;
@@ -28,8 +27,7 @@
                 component.state.avatar_src = 'http://placekitten.com/32/32';
                 component.setState(component.state);
                 USER_URL.resolve(data.url);
-            });
-            data_xhr.fail(function () {
+            }).fail(function () {
                 component.state = component.getInitialState();
                 USER_NAME = component.state.username = 'Please login.';
                 component.setState(component.state);
@@ -41,21 +39,23 @@
         },
         handleLogin: function () {
             var component = this;
-            var login = this.refs.login.getDOMNode().value;
-            var password = this.refs.password.getDOMNode().value;
-            console.log(login+':'+password);
             
             USER_URL = $.Deferred();
             
-            var data = {};
-            data['username'] = login;
-            data['password'] = password;
-            var data_xhr = RequestPOST('/api-token-auth/', data);
-            data_xhr.done(function( data ) {
+            var data = {
+                'username': this.refs.login.getDOMNode().value,
+                'password': this.refs.password.getDOMNode().value
+            };
+
+            var login_request = RequestPOST('/api-token-auth/', data);
+            
+            login_request.done(function( data ) {
                 console.log(data);
+                
                 $.ajaxSetup ({
                     headers: {'Authorization': 'Token '+data.token}
                 });
+
                 component.loadFromServer();
             });
         },
