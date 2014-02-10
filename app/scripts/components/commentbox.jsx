@@ -7,6 +7,7 @@ var CommentBox = React.createClass({
       dataType: 'json',
       success: function(data) {
         this.setState({data: data});
+        console.log(data);
       }.bind(this)
     });
   },
@@ -57,12 +58,8 @@ var CommentForm = React.createClass({
   render: function() {
     return (
       <form className="commentForm" onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          placeholder="Say something..."
-          ref="text"
-        />
-        <input type="submit" value="Post" />
+        <textarea ref="text"></textarea>
+        <button type="submit">Post</button>
       </form>
     );
   }
@@ -72,7 +69,7 @@ var CommentForm = React.createClass({
 var CommentList = React.createClass({
   render: function() {
     var commentNodes = this.props.data.map(function (comment) {
-      return <Comment key={comment.id} author={comment.author_descr}>{comment.comment}</Comment>;
+      return <Comment key={comment.id} author={comment.author_descr} date={comment.submit_date}>{comment.comment}</Comment>;
     });
     return (
       <div className="commentList">
@@ -86,10 +83,15 @@ var Comment = React.createClass({
   render: function() {
     return (
       <div className="comment">
-        <h2 className="commentAuthor">
-          {this.props.author}
-        </h2>
-        {this.props.children.toString()}
+        <div className="top clearfix">
+          <h3 className="commentAuthor">
+            {this.props.author}
+          </h3>
+          <span className="date">{this.props.date}</span>
+        </div>
+        <p>
+          {this.props.children.toString()}
+        </p>
       </div>
     );
   }

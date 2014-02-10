@@ -53,11 +53,8 @@
             
             login_request.done(function( data ) {
                 console.log(data);
-<<<<<<< HEAD
-                
-=======
                 $.cookie("damntoken", data.token);
->>>>>>> 8ff9b1b547e685681e195debe75de5e0b87459d7
+
                 $.ajaxSetup ({
                     headers: {'Authorization': 'Token '+data.token}
                 });

@@ -20,7 +20,7 @@
             return (
                 <form className="filteredListSearchForm" onSubmit={this.handleSubmit} title={this.state.description}>
                     <input type="text" placeholder="Search..." ref="text"/>
-                    <button type="submit">Search</button>
+                    <button type="submit" className="fa fa-search"></button>
                 </form>
             );
         }
@@ -28,19 +28,17 @@
     
     var FilteredListOrder = React.createClass({
         handleClick: function(event) {
-            console.log(event);
-            var field = $(event.target).attr('value');
-            console.log(field);
+            var field = $(event.target).data('value');
             this.props.onOrder({field: field});
             return false;
           },
         render: function() {
             return (
-                <ul onClick={this.handleClick}>
+                <select className="filterOrder dropdown" onClick={this.handleClick}>
                        {this.props.order.choices.map(function(item)  {
-                            return <li key={item[0]} value={item[0]}>{item[1]}</li>
+                            return <option key={item[0]} data-value={item[0]}>{item[1]}</option>
                         })}
-                </ul>
+                </select>
             );
         }
     });
@@ -57,9 +55,13 @@
         },
         render: function() {
             return (
-                <div>
-                    <span ref="previous" onClick={this.handlePrevious}>Previous</span>
-                    <span ref="next" onClick={this.handleNext}>Next</span>
+                <div className="paginator">
+                    <span ref="previous" onClick={this.handlePrevious}>
+                        <i className="fa fa-arrow-circle-o-left"></i> Prev
+                    </span>
+                    <span ref="next" onClick={this.handleNext}>
+                        Next <i className="fa fa-arrow-circle-o-right"></i>
+                    </span>
                 </div>
             );
         }
@@ -136,12 +138,14 @@
                         <FilteredListSearch search={this.state.search} onSearch={this.handleonSearch}></FilteredListSearch>
                         <FilteredListOrder order={this.state.ordering} onOrder={this.handleonOrder}></FilteredListOrder>
                         <FilteredListPaginator data={this.state.data} onNavigate={this.handleonNavigate}></FilteredListPaginator>
-                        <ul>
+                        <ul className="filteredListItems">
                            {this.state.data.results.map(function(itm, i)  {
+                            console.log(itm);
                                 var boundClick = this.handleSelected.bind(this, i);
                                 return this.props.type({key:itm.id, data:itm, onClick:boundClick, selected:(this.state.selected == i)});
                             }, this)}
                         </ul>
+                        <FilteredListPaginator data={this.state.data} onNavigate={this.handleonNavigate}></FilteredListPaginator>
                     </div>
                     <div className="workspace-detail">
                         {this.state.active?this.props.detailtype({key:this.state.active.id, data:this.state.active, context:this.props.context.slice(1)}):''}

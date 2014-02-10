@@ -14,6 +14,9 @@
                 <li className={this.props.selected?'active':''} data-url={this.props.data.url}>
                     <h3>{this.props.data.summary}</h3>
                     <span>{this.props.data.description}</span>
+                    <div className="priority high">
+                        <i className="fa fa-flag"></i>
+                    </div>
                 </li>
             );
         }
@@ -118,17 +121,18 @@
         render: function() {
             return this.transferPropsTo(
                 <div className="taskDetail">
-                    <h3>{this.props.data.summary}</h3>
-                    <FollowControl description={this.props.data.summary} object_url={this.props.data.url} is_following={this.props.data.is_following}/>
-                    
-                    <EditorControl parent={this} object_url={this.props.data.url} />
-                    
-                    <div>{this.props.data.description}</div>
-                    
-                    {$.map(this.getFields(),function(value, key)  {
-                        return (<ReadOnlyField key={key} name={key} value={value.value} url={value.url} />);
-                    }.bind(this), this)}
-                    
+                    <div className="content">
+                        <h2>{this.props.data.summary}</h2>
+                        <FollowControl description={this.props.data.summary} object_url={this.props.data.url} is_following={this.props.data.is_following}/>
+                        
+                        <EditorControl parent={this} object_url={this.props.data.url} />
+                        
+                        <div>{this.props.data.description}</div>
+                        
+                        {$.map(this.getFields(),function(value, key)  {
+                            return (<ReadOnlyField key={key} name={key} value={value.value} url={value.url} />);
+                        }.bind(this), this)}
+                    </div>
                     <TabsSwitcher active={this.props.context[0]} tabs={[{title:'Comments', content:<CommentBox url={this.props.data.url+'comments/'} pollInterval={60000} />},
                                          {title:'Revisions', content:<List type={Revision} url={this.props.data.url+'revisions/'} />},
                                          {title:'Followers', content:<List type={Follower} url={this.props.data.url+'followers/'} />},
